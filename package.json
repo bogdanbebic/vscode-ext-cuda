@@ -10,7 +10,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:vscode-ext-cuda.helloWorld"
+		"onCommand:vscode-ext-cuda.helloWorld",
+		"onLanguage:cuda"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -18,6 +19,17 @@
 			{
 				"command": "vscode-ext-cuda.helloWorld",
 				"title": "Hello World"
+			}
+		],
+		"languages": [
+			{
+				"id": "cuda",
+				"aliases": [
+					"CUDA"
+				],
+				"extensions": [
+					".cu"
+				]
 			}
 		]
 	},
