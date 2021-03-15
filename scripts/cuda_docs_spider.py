@@ -1,0 +1,73 @@
+import scrapy
+
+
+class CudaDocsSpider(scrapy.Spider):
+    name = "cuda_docs"
+
+    custom_settings = {
+        # "ROBOTSTXT_OBEY": True,
+        "DOWNLOAD_DELAY": 2,
+    }
+
+    start_urls = [
+        "file:///C:/Users/Bogdan/Desktop/cuda-index.html",
+    ]
+
+    def parse(self, response):
+        urls = response.xpath("//div[@class='body']//ul/li/a/@href").re(
+            r".*group__CUDART.*"
+        )
+        self.logger.debug(f"docs urls found: {urls}")
+        urls = ["file:///C:/Users/Bogdan/Desktop/cuda-page-1.html"]
+        yield from response.follow_all(urls, callback=self.parse_docs)
+
+    def parse_docs(self, response):
+        groups = response.xpath("//div[@class='description']")
+        headings = groups.xpath("h3//text()").getall()
+        contents = groups.xpath("dl")
+        for heading, content in zip(headings, contents):
+            if heading == "Functions":
+                parsed_contents = self._parse_content_functions(content)
+            elif heading == "Defines":
+                parsed_contents = self._parse_content_defines(content)
+            elif heading == "Typedefs":
+                parsed_contents = self._parse_content_typedefs(content)
+            elif heading == "Enumerations":
+                parsed_contents = self._parse_content_enumerations(content)
+            else:
+                self.logger.warning("Detected unknown heading:", heading)
+            for parsed_entry in parsed_contents:
+                yield parsed_entry
+
+    def _parse_content_functions(self, selector):
+        ret_lst = []
+        # TODO: implement
+        return ret_lst
+
+    def _parse_content_defines(self, selector):
+        ret_lst = []
+        define_str_list = selector.xpath("./dt/span/text()").getall()
+        # TODO: fix descriptions
+        description_list = selector.xpath("./dd/div/p/text()").getall()
+        for define_str, descr in zip(define_str_list, description_list):
+            define_list = define_str.split()
+            name = define_list[1]
+            value = define_list[2] if len(define_list) == 3 else ""
+            ret_lst.append(
+                {
+                    "name": name,
+                    "value": value,
+                    # "descr": descr,
+                }
+            )
+        return ret_lst
+
+    def _parse_content_typedefs(self, selector):
+        ret_lst = []
+        # TODO: implement
+        return ret_lst
+
+    def _parse_content_enumerations(self, selector):
+        ret_lst = []
+        # TODO: implement
+        return ret_lst
