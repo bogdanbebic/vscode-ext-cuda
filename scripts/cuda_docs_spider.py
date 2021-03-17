@@ -99,4 +99,30 @@ class CudaDocsSpider(scrapy.Spider):
                     "descr": descr,
                 }
             )
+            members = self._parse_content_enum_members(descr_selector.xpath("./div/dl"))
+            ret_lst += members
+        return ret_lst
+
+    def _parse_content_enum_members(self, selector):
+        ret_lst = []
+        member_selectors = selector.xpath("./dt/span")
+        descr_selectors = selector.xpath("./dd")
+        last_member_value = -1
+        for member_selector, descr_selector in zip(member_selectors, descr_selectors):
+            member_str = "".join(member_selector.xpath(".//text()").getall())
+            member_list = member_str.split()
+            name = member_list[0]
+            if len(member_list) == 3:
+                value = member_list[2]
+            else:
+                value = str(last_member_value + 1)
+            last_member_value = int(value, 0)
+            descr = "".join(descr_selector.xpath(".//text()").getall())
+            ret_lst.append(
+                {
+                    "name": name,
+                    "value": value,
+                    "descr": descr,
+                }
+            )
         return ret_lst
