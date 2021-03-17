@@ -64,7 +64,23 @@ class CudaDocsSpider(scrapy.Spider):
 
     def _parse_content_typedefs(self, selector):
         ret_lst = []
-        # TODO: implement
+        typedef_selectors = selector.xpath("./dt/span")
+        descr_selectors = selector.xpath("./dd/div/p")
+        for typedef_selector, descr_selector in zip(typedef_selectors, descr_selectors):
+            typedef_str = "".join(typedef_selector.xpath(".//text()").getall())
+            typedef_list = typedef_str.split()
+            if typedef_list[0] != "typedef":
+                continue
+            name = typedef_list[-1]
+            value = " ".join(typedef_list[1:-1])
+            descr = "".join(descr_selector.xpath(".//text()").getall())
+            ret_lst.append(
+                {
+                    "name": name,
+                    "value": value,
+                    "descr": descr,
+                }
+            )
         return ret_lst
 
     def _parse_content_enumerations(self, selector):
