@@ -86,5 +86,17 @@ class CudaDocsSpider(scrapy.Spider):
 
     def _parse_content_enumerations(self, selector):
         ret_lst = []
-        # TODO: implement
+        enum_selectors = selector.xpath("./dt/span")
+        descr_selectors = selector.xpath("./dd")
+        for enum_selector, descr_selector in zip(enum_selectors, descr_selectors):
+            enum_str = "".join(enum_selector.xpath(".//text()").getall())
+            enum_list = enum_str.split()
+            name = enum_list[1]
+            descr = "".join(descr_selector.xpath("./div/p//text()").getall())
+            ret_lst.append(
+                {
+                    "name": name,
+                    "descr": descr,
+                }
+            )
         return ret_lst
