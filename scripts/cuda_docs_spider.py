@@ -46,18 +46,19 @@ class CudaDocsSpider(scrapy.Spider):
 
     def _parse_content_defines(self, selector):
         ret_lst = []
-        define_str_list = selector.xpath("./dt/span/text()").getall()
-        # TODO: fix descriptions
-        description_list = selector.xpath("./dd/div/p/text()").getall()
-        for define_str, descr in zip(define_str_list, description_list):
+        define_selectors = selector.xpath("./dt/span")
+        descr_selectors = selector.xpath("./dd/div/p")
+        for define_selector, descr_selector in zip(define_selectors, descr_selectors):
+            define_str = "".join(define_selector.xpath(".//text()").getall())
             define_list = define_str.split()
             name = define_list[1]
             value = define_list[2] if len(define_list) == 3 else ""
+            descr = "".join(descr_selector.xpath(".//text()").getall())
             ret_lst.append(
                 {
                     "name": name,
                     "value": value,
-                    # "descr": descr,
+                    "descr": descr,
                 }
             )
         return ret_lst
