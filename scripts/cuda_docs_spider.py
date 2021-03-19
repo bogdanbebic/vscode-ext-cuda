@@ -1,4 +1,5 @@
 import scrapy
+import re
 
 
 class CudaDocsSpider(scrapy.Spider):
@@ -18,7 +19,10 @@ class CudaDocsSpider(scrapy.Spider):
             r".*group__CUDART.*"
         )
         self.logger.debug(f"docs urls found: {urls}")
-        urls = ["file:///C:/Users/Bogdan/Desktop/cuda-page-1.html"]
+        urls = [
+            "file:///C:/Users/Bogdan/Desktop/cuda-page-1.html",
+            "file:///C:/Users/Bogdan/Desktop/cuda-page-2.html",
+        ]
         yield from response.follow_all(urls, callback=self.parse_docs)
 
     def parse_docs(self, response):
@@ -41,7 +45,49 @@ class CudaDocsSpider(scrapy.Spider):
 
     def _parse_content_functions(self, selector):
         ret_lst = []
-        # TODO: implement
+        function_selectors = selector.xpath("./dt")
+        descr_selectors = selector.xpath("./dd")
+        for func_selector, descr_selector in zip(function_selectors, descr_selectors):
+            # Parse function signature
+            template_signature = "".join(func_selector.xpath("./p//text()").getall())
+            func_signature = "".join(func_selector.xpath("./span//text()").getall())
+            func_signature = func_signature.replace("\u200b", "")
+            # modifier, return_type, func_name, args_list
+            signature_re = (
+                r"(__host__|__device__|__host__\s+__device__)\s+(.+)\s+(\w+)\s+\((.*)\)"
+            )
+            m = re.match(signature_re, func_signature)
+            modifier = " ".join(m[1].strip().split())
+            return_type = m[2].strip()
+            func_name = m[3].strip()
+            args_list = " ".join(m[4].strip().split())
+            name = func_name
+            value = f"{modifier} {return_type} {func_name}({args_list})"
+            if template_signature != "":
+                value = f"{template_signature} {value}"
+            # Parse description
+            short_descr = "".join(
+                descr_selector.xpath("./div")[0].xpath(".//text()").getall()
+            )
+            descr = short_descr
+            # Not all functions have detailed documentation,
+            # we add it if it exists
+            if len(descr_selector.xpath("./div")) == 4:
+                param_descr = "".join(
+                    descr_selector.xpath("./div")[1].xpath(".//text()").getall()
+                )
+                returns_descr = "".join(
+                    descr_selector.xpath("./div")[2].xpath(".//text()").getall()
+                )
+                descr += param_descr + returns_descr
+            ret_lst.append(
+                {
+                    "kind": "function",
+                    "name": name,
+                    "value": value,
+                    "descr": descr,
+                }
+            )
         return ret_lst
 
     def _parse_content_defines(self, selector):
