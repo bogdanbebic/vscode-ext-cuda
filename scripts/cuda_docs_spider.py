@@ -56,6 +56,7 @@ class CudaDocsSpider(scrapy.Spider):
             descr = "".join(descr_selector.xpath(".//text()").getall())
             ret_lst.append(
                 {
+                    "kind": "define",
                     "name": name,
                     "value": value,
                     "descr": descr,
@@ -77,6 +78,7 @@ class CudaDocsSpider(scrapy.Spider):
             descr = "".join(descr_selector.xpath(".//text()").getall())
             ret_lst.append(
                 {
+                    "kind": "typedef",
                     "name": name,
                     "value": value,
                     "descr": descr,
@@ -95,6 +97,7 @@ class CudaDocsSpider(scrapy.Spider):
             descr = "".join(descr_selector.xpath("./div/p//text()").getall())
             ret_lst.append(
                 {
+                    "kind": "enum",
                     "name": name,
                     "descr": descr,
                 }
@@ -120,6 +123,7 @@ class CudaDocsSpider(scrapy.Spider):
             descr = "".join(descr_selector.xpath(".//text()").getall())
             ret_lst.append(
                 {
+                    "kind": "enum-member",
                     "name": name,
                     "value": value,
                     "descr": descr,
