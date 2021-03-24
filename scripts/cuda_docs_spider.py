@@ -6,12 +6,12 @@ class CudaDocsSpider(scrapy.Spider):
     name = "cuda_docs"
 
     custom_settings = {
-        # "ROBOTSTXT_OBEY": True,
+        "ROBOTSTXT_OBEY": True,
         "DOWNLOAD_DELAY": 2,
     }
 
     start_urls = [
-        "file:///C:/Users/Bogdan/Desktop/cuda-index.html",
+        "https://docs.nvidia.com/cuda/cuda-runtime-api/index.html",
     ]
 
     def parse(self, response):
@@ -19,10 +19,6 @@ class CudaDocsSpider(scrapy.Spider):
             r".*group__CUDART.*"
         )
         self.logger.debug(f"docs urls found: {urls}")
-        urls = [
-            "file:///C:/Users/Bogdan/Desktop/cuda-page-1.html",
-            "file:///C:/Users/Bogdan/Desktop/cuda-page-2.html",
-        ]
         yield from response.follow_all(urls, callback=self.parse_docs)
 
     def parse_docs(self, response):
