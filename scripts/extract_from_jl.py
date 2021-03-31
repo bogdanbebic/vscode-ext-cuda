@@ -4,28 +4,42 @@ import pathlib
 
 
 def extract_functions_data(json_obj):
-    # TODO: implement
-    return json_obj
+    return {
+        "label": json_obj["name"],
+        "detail": json_obj["value"],
+        "documentation": json_obj["descr"].strip(),
+    }
 
 
 def extract_defines_data(json_obj):
-    # TODO: implement
-    return json_obj
+    return {
+        "label": json_obj["name"],
+        "detail": json_obj["value"],
+        "documentation": json_obj["descr"].strip(),
+    }
 
 
 def extract_typedefs_data(json_obj):
-    # TODO: implement
-    return json_obj
+    return {
+        "label": json_obj["name"],
+        "detail": json_obj["value"],
+        "documentation": json_obj["descr"].strip(),
+    }
 
 
 def extract_enumerations_data(json_obj):
-    # TODO: implement
-    return json_obj
+    return {
+        "label": json_obj["name"],
+        "documentation": json_obj["descr"].strip(),
+    }
 
 
 def extract_enum_members_data(json_obj):
-    # TODO: implement
-    return json_obj
+    return {
+        "label": json_obj["name"],
+        "detail": json_obj["value"],
+        "documentation": json_obj["descr"].strip(),
+    }
 
 
 def main():
