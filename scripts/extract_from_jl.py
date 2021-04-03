@@ -14,7 +14,7 @@ def extract_functions_data(json_obj):
 def extract_defines_data(json_obj):
     return {
         "label": json_obj["name"],
-        "detail": json_obj["value"],
+        "detail": f'#define {json_obj["name"]} {json_obj["value"]}',
         "documentation": json_obj["descr"].strip(),
     }
 
@@ -30,6 +30,7 @@ def extract_typedefs_data(json_obj):
 def extract_enumerations_data(json_obj):
     return {
         "label": json_obj["name"],
+        "detail": f'enum {json_obj["name"]}',
         "documentation": json_obj["descr"].strip(),
     }
 
