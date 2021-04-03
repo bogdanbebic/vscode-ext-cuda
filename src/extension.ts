@@ -25,6 +25,22 @@ export function activate(context: vscode.ExtensionContext) {
 			return new vscode.CompletionList(allItems);
 		}
 	}, defaultTriggerChars));
+
+	context.subscriptions.push(vscode.languages.registerHoverProvider('cuda', {
+		provideHover(document, position, token) {
+			const range = document.getWordRangeAtPosition(position);
+			const word = document.getText(range);
+			let index = allItems.map((e: { label: any; }) => e.label).indexOf(word);
+			if (index !== -1) {
+				return new vscode.Hover(
+					`\`${allItems[index].detail}\`\n\n${allItems[index].documentation}`,
+					range
+				);
+			}
+
+			return undefined;
+		}
+	}));
 }
 
 export function deactivate() { }
