@@ -1,13 +1,24 @@
 import argparse
 import json
 import pathlib
+import re
 
 
 def extract_functions_data(json_obj):
+    descr = re.split(r"Parameters|Returns\n", json_obj["descr"].strip())
+    documentation = f"{descr[0].strip()}\n"
+    if len(descr) == 3:
+        params_descr = re.sub(" +", " ", descr[1].strip())
+        params_descr = re.sub(r"(\w+)\n", r"\1", params_descr)
+        params_descr = re.sub(r" \n ", r"\n", params_descr)
+        returns_descr = descr[2].strip()
+        documentation = (
+            f"{documentation}\nParameters\n{params_descr}\n\nReturns\n{returns_descr}\n"
+        )
     return {
         "label": json_obj["name"],
         "detail": json_obj["value"],
-        "documentation": json_obj["descr"].strip(),
+        "documentation": documentation,
     }
 
 
