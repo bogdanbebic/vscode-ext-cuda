@@ -13,6 +13,17 @@ def extract_params(function_signature_str):
     return []
 
 
+def extract_template_args(function_signature_str):
+    match = re.match(r"template < ([^>]*) >.*", function_signature_str)
+    if match:
+        template_args_str = match.group(1)
+        template_args = (
+            re.split(r", ", template_args_str) if template_args_str != "void" else []
+        )
+        return template_args
+    return []
+
+
 def extract_functions_data(json_obj):
     descr = re.split(r"Parameters|Returns\n", json_obj["descr"].strip())
     documentation = f"{descr[0].strip()}\n"
@@ -29,6 +40,7 @@ def extract_functions_data(json_obj):
         "detail": json_obj["value"],
         "documentation": documentation,
         "parameters": extract_params(json_obj["value"]),
+        "templateArgs": extract_template_args(json_obj["value"]),
     }
 
 
