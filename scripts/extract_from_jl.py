@@ -9,7 +9,12 @@ def extract_params(function_signature_str):
     if match:
         params_str = match.group(1)
         params = re.split(r", ", params_str) if params_str != "void" else []
-        return params
+        for i in range(len(params)):
+            if "<" in params[i] and ">" not in params[i]:
+                params[i] = ", ".join([params[i], params[i + 1]])
+        return list(
+            filter(lambda param: not (">" in param and "<" not in param), params)
+        )
     return []
 
 
