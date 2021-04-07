@@ -11,10 +11,10 @@ def extract_functions_data(json_obj):
         params_descr = re.sub(" +", " ", descr[1].strip())
         params_descr = re.sub(r"(\w+)\n", r"\1", params_descr)
         params_descr = re.sub(r" \n ", r"\n", params_descr)
+        params_descr = f"\n{params_descr}"
+        params_descr = re.sub(r"\n(\w+) -", r"\n- \1 -", params_descr)
         returns_descr = descr[2].strip()
-        documentation = (
-            f"{documentation}\nParameters\n{params_descr}\n\nReturns\n{returns_descr}\n"
-        )
+        documentation = f"{documentation}\nParameters\n{params_descr}\n\nReturns\n\n{returns_descr}\n"
     return {
         "label": json_obj["name"],
         "detail": json_obj["value"],
