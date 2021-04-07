@@ -4,6 +4,15 @@ import pathlib
 import re
 
 
+def extract_params(function_signature_str):
+    match = re.match(r".*\(([^\)]*)\)", function_signature_str)
+    if match:
+        params_str = match.group(1)
+        params = re.split(r", ", params_str) if params_str != "void" else []
+        return params
+    return []
+
+
 def extract_functions_data(json_obj):
     descr = re.split(r"Parameters|Returns\n", json_obj["descr"].strip())
     documentation = f"{descr[0].strip()}\n"
@@ -19,6 +28,7 @@ def extract_functions_data(json_obj):
         "label": json_obj["name"],
         "detail": json_obj["value"],
         "documentation": documentation,
+        "parameters": extract_params(json_obj["value"]),
     }
 
 
