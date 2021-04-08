@@ -12,9 +12,12 @@ def extract_params(function_signature_str):
         for i in range(len(params)):
             if "<" in params[i] and ">" not in params[i]:
                 params[i] = ", ".join([params[i], params[i + 1]])
-        return list(
-            filter(lambda param: not (">" in param and "<" not in param), params)
-        )
+        return [
+            {"label": _}
+            for _ in filter(
+                lambda param: not (">" in param and "<" not in param), params
+            )
+        ]
     return []
 
 
@@ -25,7 +28,7 @@ def extract_template_args(function_signature_str):
         template_args = (
             re.split(r", ", template_args_str) if template_args_str != "void" else []
         )
-        return template_args
+        return [{"label": _} for _ in template_args]
     return []
 
 
