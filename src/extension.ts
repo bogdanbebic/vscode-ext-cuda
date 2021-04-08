@@ -41,6 +41,35 @@ export function activate(context: vscode.ExtensionContext) {
 			return undefined;
 		}
 	}));
+
+	context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('cuda', {
+		provideSignatureHelp(document, position, token, context) {
+			const triggerText = document.getText(new vscode.Range(document.positionAt(0), position));
+			const regex = /.*\W*(\w+)\s*\(([^\)]*)$/m;
+			const match = triggerText.match(regex);
+			if (!match) {
+				return undefined;
+			}
+
+			const functionName = match[1];
+			const paramsCount = match[2].split(",").length - 1;
+			let index = functions.map((e: { label: any; }) => e.label).indexOf(functionName);
+			if (index !== -1) {
+				return {
+					signatures: [
+						{
+							label: functions[index].detail,
+							parameters: functions[index].parameters
+						}
+					],
+					activeSignature: 0,
+					activeParameter: paramsCount
+				};
+			}
+
+			return undefined;
+		}
+	}, '(', ','));
 }
 
 export function deactivate() { }
