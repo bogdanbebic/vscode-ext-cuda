@@ -45,26 +45,45 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('cuda', {
 		provideSignatureHelp(document, position, token, context) {
 			const triggerText = document.getText(new vscode.Range(document.positionAt(0), position));
-			const regex = /.*\W*(\w+)\s*\(([^\)]*)$/m;
-			const match = triggerText.match(regex);
-			if (!match) {
-				return undefined;
-			}
-
-			const functionName = match[1];
-			const paramsCount = match[2].split(",").length - 1;
-			let index = functions.map((e: { label: any; }) => e.label).indexOf(functionName);
-			if (index !== -1) {
-				return {
-					signatures: [
-						{
-							label: functions[index].detail,
-							parameters: functions[index].parameters
+			let offset = document.offsetAt(position);
+			let paramsCount = 0;
+			let parenCount = 0;
+			for (let index = offset - 1; index > 0; index--) {
+				switch (triggerText[index]) {
+					case ",":
+						if (parenCount === 0) {
+							paramsCount++;
 						}
-					],
-					activeSignature: 0,
-					activeParameter: paramsCount
-				};
+						break;
+					case ")":
+						parenCount++;
+						break;
+					case "(":
+						if (parenCount > 0) {
+							parenCount--;
+						}
+						else {
+							// provide signature help
+							const range = document.getWordRangeAtPosition(document.positionAt(index - 1));
+							const functionName = document.getText(range);
+							const functionIndex = functions.map((e: { label: any; }) => e.label).indexOf(functionName);
+							if (functionIndex !== -1) {
+								return {
+									signatures: [
+										{
+											label: functions[functionIndex].detail,
+											parameters: functions[functionIndex].parameters
+										}
+									],
+									activeSignature: 0,
+									activeParameter: paramsCount
+								};
+							}
+						}
+						break;
+					default:
+						break;
+				}
 			}
 
 			return undefined;
