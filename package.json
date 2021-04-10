@@ -1,11 +1,25 @@
 {
 	"name": "vscode-ext-cuda",
-	"displayName": "vscode-ext-cuda",
-	"description": "",
+	"displayName": "CUDA Runtime",
+	"description": "Autocomplete, hover documentation, function signature arguments help",
 	"version": "0.0.1",
+	"publisher": "bogdanbebic",
+	"license": "MIT",
+	"homepage": "https://github.com/bogdanbebic/vscode-ext-cuda",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/bogdanbebic/vscode-ext-cuda"
+	},
+	"bugs": {
+		"url": "https://github.com/bogdanbebic/vscode-ext-cuda/issues"
+	},
 	"engines": {
 		"vscode": "^1.53.0"
 	},
+	"keywords": [
+		"CUDA",
+		"HPC"
+	],
 	"categories": [
 		"Other"
 	],
